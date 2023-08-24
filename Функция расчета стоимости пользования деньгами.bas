@@ -1,43 +1,49 @@
-Attribute VB_Name = "Функция"
 Option Explicit
 
 
-Public Function СТОИМОСТЬДС(startDate As Date, endDate As Date, plata As Double, nds As Double) As Double
-Attribute СТОИМОСТЬДС.VB_Description = "Расчет стоимости пользования деньгами"
-Attribute СТОИМОСТЬДС.VB_ProcData.VB_Invoke_Func = " \n14"
-    ' Переменные для хранения дат периодов с разными % ставками
+Public Function РЎРўРћРРњРћРЎРўР¬Р”РЎ(startDate As Date, endDate As Date, plata As Double, nds As Double) As Variant
+    On Error GoTo ErrorHandler
+    ' РџРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°С‚ РїРµСЂРёРѕРґРѕРІ СЃ СЂР°Р·РЅС‹РјРё % СЃС‚Р°РІРєР°РјРё
     Dim startDate1 As Date
     Dim endDate1 As Date
     
-    ' Переменные для хранения процентов и сумм
+    ' РџРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїСЂРѕС†РµРЅС‚РѕРІ Рё СЃСѓРјРј
     Dim summ As Double
     Dim precent As Double
     Dim janDays As Long
     Dim i As Integer
     Dim f As Double
-    f = WorksheetFunction.CountA(Worksheets("КредитныеПроценты").Range("C:C"))
+    f = WorksheetFunction.CountA(Worksheets("РљСЂРµРґРёС‚РЅС‹РµРџСЂРѕС†РµРЅС‚С‹").Range("C:C"))
     
-    ' Проверяем наличие НДС
+    ' РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РќР”РЎ
     If nds > 0 Then
         plata = plata + nds
     End If
-    
-    ' Вычисление количества дней в месяце находящихся в периоде
-    If endDate > startDate Then
-        For i = 1 To f
-            startDate1 = Worksheets("КредитныеПроценты").Range("A" & i)
-            endDate1 = Worksheets("КредитныеПроценты").Range("B" & i)
-            If startDate < endDate1 Then
-                If endDate >= startDate1 Then
-                    janDays = DateDiff("d", IIf(startDate >= startDate1, startDate, startDate1), IIf(endDate <= endDate1, endDate, endDate1)) + 1
-                    precent = Worksheets("КредитныеПроценты").Range("C" & i).Value
-                    summ = plata * janDays * precent / 365 + summ
-                    
-                    precent = 0
+
+    ' Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РґРЅРµР№ РІ РјРµСЃСЏС†Рµ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ РїРµСЂРёРѕРґРµ
+    If startDate <> 0 And endDate <> 0 And plata <> 0 Then
+        If endDate > startDate Then
+            For i = 1 To f
+                startDate1 = Worksheets("РљСЂРµРґРёС‚РЅС‹РµРџСЂРѕС†РµРЅС‚С‹").Range("A" & i)
+                endDate1 = Worksheets("РљСЂРµРґРёС‚РЅС‹РµРџСЂРѕС†РµРЅС‚С‹").Range("B" & i)
+                If startDate < endDate1 Then
+                    If endDate >= startDate1 Then
+                        janDays = DateDiff("d", IIf(startDate >= startDate1, startDate, startDate1), IIf(endDate <= endDate1, endDate, endDate1)) + 1
+                        precent = Worksheets("РљСЂРµРґРёС‚РЅС‹РµРџСЂРѕС†РµРЅС‚С‹").Range("C" & i).Value
+                        summ = plata * janDays * precent / 365 + summ
+                        
+                        precent = 0
+                    End If
                 End If
-            End If
-        Next i
+            Next i
+        End If
+    Else
+        РЎРўРћРРњРћРЎРўР¬Р”РЎ = ""
+        Exit Function
     End If
     
-    СТОИМОСТЬДС = summ
+    РЎРўРћРРњРћРЎРўР¬Р”РЎ = summ
+    Exit Function
+ErrorHandler:
+    РЎРўРћРРњРћРЎРўР¬Р”РЎ = CVErr(xlErrValue)
 End Function
